@@ -7,6 +7,7 @@ var defaults = {
 
 module.exports = function(opts, cb) {
   var service = opts.service || defaults.service;
+  var debug = opts.debug !== false;
   var shouldTimeout = false;
   if (opts.timeout !== undefined) {
     setTimeout(function() {
@@ -16,10 +17,14 @@ module.exports = function(opts, cb) {
   attemptConnection();
 
   function attemptConnection() {
-    console.log(new Date().toISOString()+' Waiting to connect to '+service+'...');
+    if (debug) {
+      console.log(new Date().toISOString()+' Waiting to connect to '+service+'...');
+    }
     var client = net.connect(opts, function() {
       client.end();
-      console.log(service+' is available.');
+      if (debug) {
+        console.log(service+' is available.');
+      }
       cb();
     }).on('error', function(err) {
       if (shouldTimeout) {

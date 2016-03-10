@@ -43,3 +43,17 @@ test('uses service name in logs', function(t) {
   };
   whenCnctReady({port: testPort, retry: 10000, timeout: 0, service: service}, function() {});
 });
+
+test('does not console.log when debug is false', function(t) {
+  t.plan(1);
+  var calls = 0;
+  oldLog = console.log;
+  console.log = function(msg) { ++calls; };
+  server.listen(testPort, function() {
+    whenCnctReady({port: testPort, timeout: 1000, debug: false}, function() {
+      console.log = oldLog;
+      server.close();
+      t.equal(calls, 0);
+    });
+  });
+});
